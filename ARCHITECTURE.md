@@ -100,7 +100,17 @@ This repo is a prototype and should be treated as a POC until formal security re
 
 ## Current-state diagram
 
-![Current-state AWS architecture](./investigaite-architecture.svg)
+```mermaid
+flowchart LR
+    User[Investigator / Analyst] -->|HTTPS| ALB[Restricted ingress / ALB]
+    ALB -->|Forward traffic| EC2[EC2: Streamlit app]
+    EC2 -->|AWS SDK| Bedrock[Amazon Bedrock]
+    EC2 -->|AWS SDK| Lambda[AWS Lambda]
+    EC2 -->|Logs / metrics| CloudWatch[Amazon CloudWatch]
+    EC2 -->|Optional artifacts| S3[Amazon S3]
+    VPC[VPC / public + private subnets] --> EC2
+    VPC --> Lambda
+```
 
 ## Near-term pilot target
 
