@@ -6,6 +6,16 @@ env/
 # Environment variables
 .env
 
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+
+# Local AWS environment inventory and operational evidence
+aws-inventory/
+
 # Python
 __pycache__/
 *.pyc

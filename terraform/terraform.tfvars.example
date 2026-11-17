@@ -1,0 +1,20 @@
+aws_region = "us-east-2"
+project_name = "investigaite"
+environment = "dev"
+
+vpc_cidr = "10.20.0.0/16"
+public_subnet_cidrs = ["10.20.1.0/24", "10.20.2.0/24"]
+private_subnet_cidrs = ["10.20.11.0/24", "10.20.12.0/24"]
+allowed_ingress_cidrs = ["203.0.113.0/24"]
+
+app_port = 8501
+ec2_instance_type = "t3.medium"
+create_artifacts_bucket = true
+artifact_bucket_name = "investigaite-artifacts-dev"
+enable_alb = false
+
+arcos_lambda_name = "arcos-nl-sql-handler"
+dea6_lambda_name = "dea6-bedrock-kb-handler"
+intent_model_id = "us.anthropic.claude-sonnet-4-6"
+explain_model_id = "us.anthropic.claude-sonnet-4-6"
+report_model_id = "us.anthropic.claude-sonnet-4-6"

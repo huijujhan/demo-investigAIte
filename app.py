@@ -1,15 +1,27 @@
-import streamlit as st
-import boto3
 import json
 import os
 import re
 import uuid
-import pandas as pd
 from io import BytesIO
 from datetime import datetime
-from dotenv import load_dotenv
+
+import boto3
+import pandas as pd
+import streamlit as st
 from docx import Document
 from docx.shared import Pt
+from dotenv import load_dotenv
+
+from app_utils import (
+    AWS_REGION,
+    ARCOS_LAMBDA_NAME,
+    DEA6_LAMBDA_NAME,
+    EXPLAIN_MODEL_ID,
+    INTENT_MODEL_ID,
+    REPORT_MODEL_ID,
+    build_history_payload,
+    invoke_lambda,
+)
 
 load_dotenv()
 
@@ -107,9 +119,6 @@ div[data-testid="stMarkdownContainer"] table {
 # ── AWS config ─────────────────────────────────────────────────────────────────
 # CFR is intentionally NOT a routing target. CFR regulations are surfaced as
 # inline citations inside the ARCOS and DEA-6 lambda responses.
-AWS_REGION          = os.getenv("AWS_REGION", "us-east-1")
-ARCOS_LAMBDA_NAME   = os.getenv("ARCOS_LAMBDA_NAME", "arcos-nl-sql-handler")
-DEA6_LAMBDA_NAME    = os.getenv("DEA6_LAMBDA_NAME",  "dea6-bedrock-kb-handler")
 
 # ── Session state ──────────────────────────────────────────────────────────────
 if "messages" not in st.session_state:
@@ -122,29 +131,12 @@ if "report_template" not in st.session_state:
     st.session_state.report_template = ""  # set after DEFAULT_REPORT_TEMPLATE is defined
 
 # ── History helpers ────────────────────────────────────────────────────────────
-def build_history_payload(n: int = 6) -> list:
-    """Return last n messages trimmed so first message is always a user turn."""
-    history = [
-        {"role": m["role"], "content": m["content"]}
-        for m in st.session_state.messages[-n:]
-        if m["role"] in ("user", "assistant")
-    ]
-    while history and history[0]["role"] != "user":
-        history.pop(0)
-    return history
 
-# ── Lambda caller ──────────────────────────────────────────────────────────────
-def invoke_lambda(function_name: str, payload: dict) -> dict:
-    client = boto3.client("lambda", region_name=AWS_REGION)
-    response = client.invoke(
-        FunctionName=function_name,
-        InvocationType="RequestResponse",
-        Payload=json.dumps(payload).encode(),
-    )
-    return json.loads(response["Payload"].read())
+def history_for_session(n: int = 6) -> list:
+    """Return the latest conversation history in a format suitable for model context."""
+    return build_history_payload(st.session_state.messages, n=n)
 
 # ── Intent classifier ──────────────────────────────────────────────────────────
-INTENT_MODEL_ID = os.getenv("INTENT_MODEL_ID", "us.anthropic.claude-sonnet-4-6")
 
 INTENT_SYSTEM_PROMPT = """You route user questions to one of two data sources.
 Reply with exactly one lowercase token and nothing else: arcos or dea6.
@@ -202,8 +194,6 @@ def classify_intent(question: str, history: list) -> str:
     return "arcos"
 
 # ── SQL → plain English ────────────────────────────────────────────────────────
-EXPLAIN_MODEL_ID = os.getenv("EXPLAIN_MODEL_ID", INTENT_MODEL_ID)
-
 EXPLAIN_SYSTEM_PROMPT = """You translate Athena SQL queries against the DEA ARCOS
 opioid shipment database into a short, plain-English explanation of the query's
 logic for a non-technical reader (journalist, policy analyst).
@@ -245,8 +235,6 @@ def explain_sql(sql: str, question: str = "") -> str:
         return f"_Could not generate explanation: {e}_"
 
 # ── Report compositor ──────────────────────────────────────────────────────────
-REPORT_MODEL_ID = os.getenv("REPORT_MODEL_ID", INTENT_MODEL_ID)
-
 REPORT_SYSTEM_PROMPT = """You are an investigative writing assistant. You
 compose a structured markdown report from a set of saved findings produced
 during an investigative chat session over ARCOS shipment data, CFR regulations,
@@ -555,7 +543,7 @@ def docx_to_text(file_bytes: bytes) -> str:
 
 # ── Main query handler ─────────────────────────────────────────────────────────
 def handle_query(question: str) -> dict:
-    history = build_history_payload(n=6)
+    history = history_for_session(n=6)
     intent  = classify_intent(question, history)
 
     lambda_map = {

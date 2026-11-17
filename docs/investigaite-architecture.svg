@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">InvestigAIte current-state AWS architecture</title>
+  <desc id="desc">Diagram showing the user, EC2-hosted Streamlit app, AWS Lambda, Bedrock, and supporting AWS services in a standard VPC layout.</desc>
+
+  <defs>
+    <style>
+      .title { font: 700 26px Arial, sans-serif; fill: #1f2937; }
+      .label { font: 600 16px Arial, sans-serif; fill: #1f2937; }
+      .small { font: 500 13px Arial, sans-serif; fill: #374151; }
+      .box { fill: #ffffff; stroke: #2563eb; stroke-width: 2; rx: 14; }
+      .service { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; rx: 14; }
+      .data { fill: #ecfdf5; stroke: #10b981; stroke-width: 2; rx: 14; }
+      .model { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2; rx: 14; }
+      .edge { stroke: #475569; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .edgeAlt { stroke: #16a34a; stroke-width: 3; fill: none; marker-end: url(#arrowGreen); }
+      .vpc { fill: #f8fafc; stroke: #94a3b8; stroke-width: 2; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#475569" />
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#16a34a" />
+    </marker>
+  </defs>
+
+  <rect x="40" y="40" width="1120" height="620" class="vpc" />
+  <text x="610" y="80" text-anchor="middle" class="title">AWS Commercial us-east-2 / Standard VPC Layout</text>
+
+  <rect x="80" y="180" width="180" height="180" class="box" />
+  <text x="170" y="220" text-anchor="middle" class="label">Investigator</text>
+  <text x="170" y="250" text-anchor="middle" class="small">Browser / analyst UI</text>
+  <text x="170" y="285" text-anchor="middle" class="small">HTTPS 443</text>
+
+  <rect x="380" y="170" width="230" height="200" class="service" />
+  <text x="495" y="215" text-anchor="middle" class="label">EC2 App Host</text>
+  <text x="495" y="245" text-anchor="middle" class="small">Streamlit service</text>
+  <text x="495" y="275" text-anchor="middle" class="small">Port 8501 local</text>
+  <text x="495" y="305" text-anchor="middle" class="small">IAM role / instance profile</text>
+
+  <rect x="720" y="170" width="210" height="120" class="model" />
+  <text x="825" y="215" text-anchor="middle" class="label">Amazon Bedrock</text>
+  <text x="825" y="245" text-anchor="middle" class="small">Intent routing</text>
+  <text x="825" y="270" text-anchor="middle" class="small">HTTPS 443</text>
+
+  <rect x="700" y="340" width="260" height="120" class="data" />
+  <text x="830" y="385" text-anchor="middle" class="label">AWS Lambda</text>
+  <text x="830" y="415" text-anchor="middle" class="small">Retrieval handlers</text>
+  <text x="830" y="440" text-anchor="middle" class="small">AWS API / HTTPS 443</text>
+
+  <rect x="240" y="520" width="240" height="90" class="box" />
+  <text x="360" y="560" text-anchor="middle" class="label">CloudWatch</text>
+  <text x="360" y="585" text-anchor="middle" class="small">Logs and metrics</text>
+
+  <rect x="580" y="520" width="240" height="90" class="box" />
+  <text x="700" y="560" text-anchor="middle" class="label">IAM / Security</text>
+  <text x="700" y="585" text-anchor="middle" class="small">Least privilege / roles</text>
+
+  <path d="M260 270 L380 270" class="edge"/>
+  <path d="M610 270 L720 270" class="edge"/>
+  <path d="M610 330 L725 390" class="edge"/>
+  <path d="M910 270 L1020 270" class="edgeAlt"/>
+  <path d="M830 460 L830 520" class="edgeAlt"/>
+  <path d="M495 370 L495 520" class="edgeAlt"/>
+
+  <text x="300" y="250" class="small">User request</text>
+  <text x="650" y="250" class="small">App call</text>
+  <text x="630" y="360" class="small">Lambda call</text>
+  <text x="920" y="250" class="small">Model response</text>
+  <text x="840" y="500" class="small">Logs</text>
+  <text x="515" y="490" class="small">Observability</text>
+
+  <text x="120" y="135" class="label">Restricted ingress or private access model</text>
+  <text x="710" y="135" class="small">Optional ALB / VPN / restricted public LB</text>
+</svg>
