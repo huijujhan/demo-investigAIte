@@ -14,7 +14,7 @@ The system is meant to help investigators answer questions spanning three core c
 - investigative reports for prior case history, findings, and related context
 - manuals and reference materials for regulatory and procedural guidance
 
-At a high level, the application workflow is:
+Workflow:
 
 1. a user asks a question in the Streamlit UI
 2. an Amazon Bedrock model classifies the request and selects the best source
@@ -61,7 +61,7 @@ The Terraform baseline reflects the current architecture assumptions without loc
 
 ## Local setup
 
-Use a Python 3.13 virtual environment for local validation. The examples below use bash commands, with a short PowerShell equivalent when needed.
+Use a Python 3.13 virtual environment for local validation. The examples below use bash commands, with a short PowerShell example when needed.
 
 ### 1. Clone the repository
 
