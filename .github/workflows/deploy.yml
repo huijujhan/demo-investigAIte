@@ -8,10 +8,27 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: /opt/investigaite/deploy.sh
+          script: |
+            sudo mkdir -p /opt/investigaite
+            if [ ! -d /opt/investigaite/.git ]; then
+              sudo git clone https://github.com/huijujhan/demo-investigAIte.git /opt/investigaite
+            fi
+            sudo git -C /opt/investigaite fetch --all --tags --prune
+            sudo git -C /opt/investigaite checkout main
+            sudo git -C /opt/investigaite pull --ff-only origin main
+            sudo chown -R $USER:$USER /opt/investigaite
+            sudo cp /opt/investigaite/scripts/investigaite.service /etc/systemd/system/investigaite.service
+            sudo bash -lc 'cd /opt/investigaite && python3 -m venv .venv || true && . .venv/bin/activate && python -m pip install --upgrade pip && python -m pip install -r requirements.txt'
+            sudo systemctl daemon-reload
+            sudo systemctl enable --now investigAIte
+            sudo systemctl restart investigAIte
+            sudo systemctl status investigAIte --no-pager --lines 20

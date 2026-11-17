@@ -277,14 +277,18 @@ resource "aws_instance" "app" {
     set -eux
 
     yum update -y
-    yum install -y git python3.13 python3.13-pip
+    yum install -y git python3 python3-pip
 
     mkdir -p /opt/investigaite
     cd /opt/investigaite
-    python3.13 -m venv .venv
+    git clone https://github.com/huijujhan/demo-investigAIte.git /opt/investigaite-src
+    cp -a /opt/investigaite-src/. /opt/investigaite/
+    cd /opt/investigaite
+    python3 -m venv .venv
     . .venv/bin/activate
     python -m pip install --upgrade pip
-    python -m pip install streamlit boto3 pandas python-dotenv python-docx
+    python -m pip install -r requirements.txt
+    python -m pip install -r requirements-dev.txt
 
     cat >/opt/investigaite/.env <<'EOF'
     AWS_REGION=${var.aws_region}
@@ -297,6 +301,27 @@ resource "aws_instance" "app" {
 
     chown -R ec2-user:ec2-user /opt/investigaite
     echo 'export AWS_REGION=${var.aws_region}' >> /etc/profile.d/investigaite.sh
+
+    cat >/etc/systemd/system/investigaite.service <<'EOF2'
+    [Unit]
+    Description=InvestigAIte Streamlit App
+    After=network.target
+
+    [Service]
+    Type=simple
+    User=ec2-user
+    WorkingDirectory=/opt/investigaite
+    EnvironmentFile=/opt/investigaite/.env
+    ExecStart=/bin/bash -lc 'source /opt/investigaite/.venv/bin/activate && cd /opt/investigaite && streamlit run app.py --server.address 0.0.0.0 --server.port 8501'
+    Restart=always
+    RestartSec=10
+
+    [Install]
+    WantedBy=multi-user.target
+    EOF2
+
+    systemctl daemon-reload
+    systemctl enable --now investigAIte
   EOT
 
   tags = merge(local.common_tags, {

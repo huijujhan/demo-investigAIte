@@ -1,0 +1,15 @@
+[Unit]
+Description=InvestigAIte Streamlit App
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/opt/investigaite
+EnvironmentFile=/opt/investigaite/.env
+ExecStart=/bin/bash -lc 'source /opt/investigaite/.venv/bin/activate && cd /opt/investigaite && streamlit run app.py --server.address 0.0.0.0 --server.port 8501'
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
