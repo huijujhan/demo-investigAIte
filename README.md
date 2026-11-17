@@ -62,6 +62,8 @@ The Terraform baseline is designed to reflect the current architecture assumptio
 
 ## Local setup
 
+The repo is expected to be managed from a Windows workstation in many operational environments. The commands below include both Unix-style and Windows PowerShell variants so the repo can be used across developer machines and operator workstations.
+
 ### 1. Clone the repository
 
 ```bash
@@ -69,11 +71,34 @@ git clone <repo-url>
 cd demo-investigAIte
 ```
 
+PowerShell:
+
+```powershell
+git clone <repo-url>
+cd demo-investigAIte
+```
+
 ### 2. Create a virtual environment
+
+macOS/Linux:
 
 ```bash
 python3.13 -m venv .venv
 source .venv/bin/activate
+```
+
+Windows PowerShell:
+
+```powershell
+py -3.13 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+If PowerShell blocks the activation script, run:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
 ```
 
 ### 3. Install dependencies
@@ -84,12 +109,28 @@ python -m pip install -r requirements.txt
 python -m pip install -r requirements-dev.txt
 ```
 
+PowerShell equivalent:
+
+```powershell
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
+```
+
 ### 4. Configure environment values
 
 Copy the example env file and adjust for the target environment:
 
+macOS/Linux:
+
 ```bash
 cp .env.example .env
+```
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
 ```
 
 The app expects values such as:
@@ -113,10 +154,40 @@ For a local development environment:
 streamlit run app.py
 ```
 
+PowerShell:
+
+```powershell
+streamlit run app.py
+```
+
 For EC2 deployment, the intended execution pattern is:
 
 ```bash
 streamlit run app.py --server.address 0.0.0.0 --server.port 8501
+```
+
+Windows operators working from a local workstation should still validate the app in a Python virtual environment first, then deploy the same repository to EC2 using the repo’s service configuration and deployment automation.
+
+## Windows operator guidance
+
+Windows is the most likely deployment and administration workstation for this repo. The following guidance is recommended:
+
+- install Python 3.13.x and verify it with `py -3.13 --version`
+- install the AWS CLI and authenticate with `aws configure` or `aws sso login` if your organization uses SSO
+- install Terraform using the approved method for the workstation or environment, such as an enterprise-managed package, the official Terraform installer, or a validated internal distribution path
+- prefer PowerShell for local validation commands and Git Bash only when the shell behavior is already familiar
+- keep `.env`, `.venv`, and other local runtime artifacts out of source control
+
+Example Windows setup flow:
+
+```powershell
+py -3.13 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
+Copy-Item .env.example .env
+streamlit run app.py
 ```
 
 ## Developer workflow and quality gates

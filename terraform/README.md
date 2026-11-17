@@ -48,6 +48,12 @@ For a user profile:
 aws configure
 ```
 
+PowerShell:
+
+```powershell
+aws configure
+```
+
 Or, if a profile already exists:
 
 ```bash
@@ -56,18 +62,27 @@ export AWS_REGION=us-east-2
 aws sts get-caller-identity
 ```
 
+PowerShell equivalent:
+
+```powershell
+$env:AWS_PROFILE = "my-profile"
+$env:AWS_REGION = "us-east-2"
+aws sts get-caller-identity
+```
+
 You should see your account ID and ARN. This confirms the CLI is authenticated and ready to use.
 
 ### 2. Install Terraform
 
-On macOS with Homebrew:
+Use the Terraform installation method approved for the workstation or environment. In a government or enterprise-managed environment, this may be delivered through an internal package repository, a managed software baseline, or an official installer package rather than a local package manager such as winget.
 
-```bash
-brew install hashicorp/tap/terraform
+Example Windows PowerShell verification after installation:
+
+```powershell
 terraform version
 ```
 
-On Linux or other environments, follow the official install path for your platform.
+This project assumes the operator can install and validate Terraform using the organization-approved process for the target environment.
 
 ### 3. Clone and prepare the repo
 
@@ -88,6 +103,12 @@ Copy the example variable file and adjust it for the target environment:
 
 ```bash
 cp terraform.tfvars.example terraform.tfvars
+```
+
+PowerShell:
+
+```powershell
+Copy-Item terraform.tfvars.example terraform.tfvars
 ```
 
 Update the values in `terraform.tfvars` so they align with your AWS account and environment. The default file is intentionally simple and suitable for a validation environment.
@@ -129,6 +150,16 @@ Once the EC2 instance is available, connect to it and check the service:
 ssh -i <your-key.pem> ec2-user@<public-ip>
 sudo systemctl status investigAIte --no-pager
 curl -I http://localhost:8501
+```
+
+If the service is running, the app should respond on port 8501.
+
+For a Windows workstation, use the same approach with SSH from PowerShell:
+
+```powershell
+ssh -i <your-key.pem> ec2-user@<public-ip>
+sudo systemctl status investigAIte --no-pager
+curl.exe -I http://localhost:8501
 ```
 
 If the service is running, the app should respond on port 8501.
