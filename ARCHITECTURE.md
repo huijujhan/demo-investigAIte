@@ -4,7 +4,7 @@
 
 This repository is a working prototype for an investigative research assistant. The current implementation is intentionally lightweight: a Streamlit front end coordinates user questions, delegates intent routing to Amazon Bedrock, calls AWS Lambda functions for data retrieval, and assembles findings into an investigative report.
 
-This document captures the current-state architecture for the repo as it exists today and the near-term target-state architecture for a pilot deployment. It is structured as an internal engineering handoff and is intended for a junior engineer taking ownership of the effort.
+This document captures the current-state architecture for the repo as it exists today and the near-term target-state architecture for a pilot deployment. It is structured as an internal engineering handoff and is intended to help an engineer quickly understand the system and take ownership of the effort.
 
 ## Current state (POC)
 
@@ -21,7 +21,7 @@ The Streamlit UI accepts investigator questions and routes them through the foll
 
 ### Repository map and how the pieces fit together
 
-The repository is deliberately small and readable so a new engineer can follow the full application lifecycle without needing deep tribal knowledge. Each top-level component exists for a specific responsibility.
+The repository is deliberately small and readable so an engineer can follow the full application lifecycle without needing deep tribal knowledge. Each top-level component exists for a specific responsibility.
 
 - `app.py`: the application entry point and the primary orchestration layer. This is where the Streamlit UI is defined, user questions are managed, conversation state is assembled, and the app decides which AWS actions to invoke.
 - `app_utils.py`: shared helper logic for AWS calls, request serialization, and context trimming. It keeps the main app cleaner and makes testing easier by isolating the AWS wrapper behavior.
@@ -196,7 +196,7 @@ This gives the team a clear path from prototype to pilot without prematurely loc
 
 ## Ownership and next steps
 
-The repository is now structured so a junior engineer can understand the system and continue from a documented baseline. The immediate next steps are:
+The repository is now structured so an engineer can understand the system and continue from a documented baseline. The immediate next steps are:
 
 1. Validate the live AWS resources against the documented architecture.
 2. Convert manual infrastructure into Terraform.
@@ -214,6 +214,6 @@ This repo is not just a single Python script. It is a compact, end-to-end invest
 - Lambda functions provide retrieval and data-side processing
 - EC2 hosts the service in a realistic AWS deployment model
 - Terraform and deployment scripts codify how the environment is created and maintained
-- documentation and checklists help a new engineer understand the system without relying on undocumented tribal knowledge
+- documentation and checklists help an engineer understand the system without relying on undocumented tribal knowledge
 
 When all of those parts work together, the user sees a simple investigator-facing experience, but behind the scenes the repo contains the complete flow for intake, classification, retrieval, synthesis, and reporting. That is the architectural story of the project and the reason the repository is structured the way it is.

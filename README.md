@@ -235,4 +235,4 @@ When contributing to this repo:
 
 ## Notes
 
-This project is intentionally structured as a functional prototype with a path toward a pilot deployment. The repository should continue to evolve in a way that makes the architecture, security posture, and operational flow understandable to a junior engineer without requiring deep tribal knowledge.
+This project is intentionally structured as a functional prototype with a path toward a pilot deployment. The repository should continue to evolve in a way that makes the architecture, security posture, and operational flow understandable to an engineer without requiring deep tribal knowledge.
