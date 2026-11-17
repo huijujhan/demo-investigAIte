@@ -36,8 +36,6 @@ The repo currently contains:
 - `requirements.txt`: runtime dependencies
 - `requirements-dev.txt`: developer and test tooling
 - `ARCHITECTURE.md`: architecture overview, repository map, and end-to-end workflow
-- `RUNBOOK.md`: operational guidance for the next engineer
-- `DEPLOYMENT_CHECKLIST.md`: pre-deployment and handoff checklist
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the detailed AWS architecture, repository map, and end-to-end system explanation.
 
@@ -220,8 +218,6 @@ The repo is intentionally structured to keep security guidance in the same place
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — system overview, repository map, data flow, current-state vs. pilot-state architecture, and end-to-end explanation
 - [DATA_SOURCES.md](DATA_SOURCES.md) — expected source types, schemas, and safe data-handling guidance
-- [RUNBOOK.md](RUNBOOK.md) — key operations and troubleshooting guidance
-- [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md) — deployment validation and handoff checklist
 
 ## Contributing
 
@@ -230,7 +226,7 @@ When contributing to this repo:
 1. keep the app config externalized through environment variables
 2. prefer IAM-based access over static credentials
 3. validate tests before proposing a merge
-4. update the architecture and runbook when the system changes
+4. update the architecture when the system changes
 5. keep the repo in a prototype-ready state for the next engineer
 
 ## Notes

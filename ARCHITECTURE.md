@@ -32,8 +32,7 @@ The repository is deliberately small and readable so an engineer can follow the 
 - `.github/workflows/`: deployment automation so changes can be promoted to the EC2 runtime in a repeatable way.
 - `tests/`: automated validation for the helper layer and other key logic that should remain stable over time.
 - `DATA_SOURCES.md`: defines the expected source categories and data contracts without committing actual sensitive or operational data.
-- `RUNBOOK.md`: operational guidance for troubleshooting, deployment validation, and handoff tasks.
-- `DEPLOYMENT_CHECKLIST.md`: pre-deployment review and validation checklist for moving from POC to pilot-ready state.
+- `README.md`: repository overview, setup steps, and high-level explanation of the application.
 
 In other words, the repository is structured as a lightweight but understandable system: the application logic lives in the Python app, the AWS integrations are abstracted into helper functions, deployment automation lives under scripts and GitHub workflows, and the infrastructure baseline lives in Terraform.
 
