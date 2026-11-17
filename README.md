@@ -35,12 +35,11 @@ The repo currently contains:
 - `app_utils.py`: reusable AWS helper functions for Lambda invocation and context building
 - `requirements.txt`: runtime dependencies
 - `requirements-dev.txt`: developer and test tooling
-- `ARCHITECTURE.md`: architecture overview and current-vs-future view
+- `ARCHITECTURE.md`: architecture overview, repository map, and end-to-end workflow
 - `RUNBOOK.md`: operational guidance for the next engineer
 - `DEPLOYMENT_CHECKLIST.md`: pre-deployment and handoff checklist
-- `SECURITY.md`: baseline security controls and review guidance
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the detailed AWS architecture and diagram. The diagram is available in [docs/investigaite-architecture.svg](docs/investigaite-architecture.svg).
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the detailed AWS architecture, repository map, and end-to-end system explanation.
 
 ## AWS deployment model
 
@@ -207,22 +206,22 @@ Unit tests are the starting point for coverage. The project includes a lightweig
 python -m pytest
 ```
 
-## Security
+## Security baseline
 
-Security baseline guidance is captured in [SECURITY.md](SECURITY.md). The expected posture is:
+The repo is intentionally structured to keep security guidance in the same place as the architecture explanation. The expected posture is:
 
 - IAM role and instance profile usage preferred over static access keys
 - no secrets checked into version control
 - least-privilege AWS permissions
 - network restrictions based on pilot or internal deployment needs
+- validation of logs, permissions, and dependency hygiene before broader deployment
 
 ## Documentation set
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) — system overview, data flow, current-state vs. pilot-state architecture
+- [ARCHITECTURE.md](ARCHITECTURE.md) — system overview, repository map, data flow, current-state vs. pilot-state architecture, and end-to-end explanation
 - [DATA_SOURCES.md](DATA_SOURCES.md) — expected source types, schemas, and safe data-handling guidance
 - [RUNBOOK.md](RUNBOOK.md) — key operations and troubleshooting guidance
 - [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md) — deployment validation and handoff checklist
-- [SECURITY.md](SECURITY.md) — baseline security controls and review checklist
 
 ## Contributing
 
