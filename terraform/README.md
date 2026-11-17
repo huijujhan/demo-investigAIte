@@ -74,15 +74,27 @@ You should see your account ID and ARN. This confirms the CLI is authenticated a
 
 ### 2. Install Terraform
 
-Use the Terraform installation method approved for the workstation or environment. In a government or enterprise-managed environment, this may be delivered through an internal package repository, a managed software baseline, or an official installer package rather than a local package manager such as winget.
+Use the Terraform installation method approved for the workstation or environment. In a government or enterprise-managed environment, this may be delivered through an internal package repository, a managed software baseline, or the official installer package rather than a local package manager such as winget.
 
-Example Windows PowerShell verification after installation:
+For a Windows workstation where a direct download is required, use the official HashiCorp release page:
+
+- download URL: https://developer.hashicorp.com/terraform/downloads
+- choose the Windows AMD64 zip archive
+- save the zip to a known location such as `C:\Tools\terraform` or another approved working directory
+- extract the `terraform.exe` file
+- add the folder containing `terraform.exe` to your system `PATH`
+
+Example PowerShell steps:
 
 ```powershell
+New-Item -ItemType Directory -Force -Path "C:\Tools\terraform" | Out-Null
+# Download the Windows AMD64 zip from the official HashiCorp releases page
+# Extract the zip contents to C:\Tools\terraform
+$env:PATH += ";C:\Tools\terraform"
 terraform version
 ```
 
-This project assumes the operator can install and validate Terraform using the organization-approved process for the target environment.
+If the organization enforces an approved software baseline, use that managed installation path instead of a local download. The key requirement is that Terraform be installed and validated before running `terraform init` or `terraform plan`.
 
 ### 3. Clone and prepare the repo
 
