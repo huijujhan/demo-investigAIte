@@ -72,6 +72,16 @@ aws sts get-caller-identity
 
 You should see your account ID and ARN. This confirms the CLI is authenticated and ready to use.
 
+Example output:
+
+```text
+{
+  "UserId": "AIDA...",
+  "Account": "123456789012",
+  "Arn": "arn:aws:iam::123456789012:user/my-user"
+}
+```
+
 ### 2. Install Terraform
 
 Use the Terraform installation method approved for the workstation or environment. In a government or enterprise-managed environment, this may be delivered through an internal package repository, a managed software baseline, or the official installer package rather than a local package manager such as winget.
@@ -96,6 +106,13 @@ terraform version
 
 If the organization enforces an approved software baseline, use that managed installation path instead of a local download. The key requirement is that Terraform be installed and validated before running `terraform init` or `terraform plan`.
 
+Expected output after installation verification:
+
+```text
+Terraform v1.8.5
+on windows_amd64
+```
+
 ### 3. Clone and prepare the repo
 
 ```bash
@@ -108,6 +125,8 @@ Then move into the Terraform directory:
 ```bash
 cd terraform
 ```
+
+Expected result: you are now in the Terraform configuration directory containing `main.tf`, `variables.tf`, and `outputs.tf`.
 
 ### 4. Configure the deployment values
 
@@ -125,16 +144,38 @@ Copy-Item terraform.tfvars.example terraform.tfvars
 
 Update the values in `terraform.tfvars` so they align with your AWS account and environment. The default file is intentionally simple and suitable for a validation environment.
 
+Example variable file shape:
+
+```hcl
+aws_region = "us-east-2"
+project_name = "investigaite"
+instance_type = "t3.small"
+```
+
 ### 5. Initialize Terraform
 
 ```bash
 terraform init
 ```
 
+Expected output should include provider installation and a successful initialization message similar to:
+
+```text
+Initializing the backend...
+Initializing provider plugins...
+Terraform has been successfully initialized!
+```
+
 ### 6. Review the deployment plan
 
 ```bash
 terraform plan
+```
+
+Expected output includes a plan summary and resource creation details such as:
+
+```text
+Plan: 9 to add, 0 to change, 0 to destroy.
 ```
 
 Review:
@@ -150,6 +191,12 @@ Review:
 
 ```bash
 terraform apply
+```
+
+Expected output during a successful apply includes a final summary like:
+
+```text
+Apply complete! Resources: 9 added, 0 changed, 0 destroyed.
 ```
 
 When prompted, confirm the apply. This creates the validation environment from the current repo baseline.
@@ -176,12 +223,26 @@ curl.exe -I http://localhost:8501
 
 If the service is running, the app should respond on port 8501.
 
+A successful service check usually looks like this:
+
+```text
+● investigAIte.service - InvestigAIte Streamlit Service
+   Loaded: loaded (/etc/systemd/system/investigaite.service; enabled; vendor preset: enabled)
+   Active: active (running) since ...
+```
+
 ### 9. Tear down the validation environment
 
 When validation is complete, tear down the test deployment to avoid leaving AWS resources running:
 
 ```bash
 terraform destroy
+```
+
+Expected output should end with a clean destruction summary similar to:
+
+```text
+Destroy complete! Resources: 9 destroyed.
 ```
 
 This removes the transient VPC, EC2 instance, IAM role, security groups, and any associated validation resources created for the test run.
