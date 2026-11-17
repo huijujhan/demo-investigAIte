@@ -2,9 +2,9 @@
 
 ## Overview
 
-InvestigAIte is a prototype investigative research assistant designed to reduce repetitive manual research and case-prep work for investigators. The current app is intentionally focused on a lightweight user experience: an analyst asks a question in natural language, the system routes the request to the most relevant data source, and the result is summarized in a report-friendly format.
+InvestigAIte helps investigators gather information from multiple sources and turn it into a concise, report-ready summary. The app supports natural-language questions, routes the request to the best data source, and brings the result together in a single review flow.
 
-This project is currently a working POC for a broader pilot effort. The goal is to reduce time spent collecting and reconciling information across multiple systems so investigators can focus on higher-value analytical and enforcement work.
+The current repository is a working baseline for an investigator-facing workflow. It is intended to reduce manual research effort and help analysts focus on case evaluation rather than repeated data collection.
 
 ## Project purpose
 
@@ -23,11 +23,11 @@ At a high level, the application workflow is:
 
 ## Default stack and runtime
 
-The repository is currently structured for a Python-based EC2 deployment rather than workstation-only execution.
+The repository is set up for a Python-based EC2 deployment rather than a workstation-only setup.
 
 - recommended Python version: 3.13.x
 - target deployment model: EC2 in AWS us-east-2
-- current repo state: prototype / POC with an upgrade path to pilot-ready architecture
+- current repo state: working baseline for a future operational deployment
 
 ## Current architecture
 
@@ -39,29 +39,29 @@ The repo currently contains:
 - `requirements-dev.txt`: developer and test tooling
 - `ARCHITECTURE.md`: architecture overview, repository map, and end-to-end workflow
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the detailed AWS architecture, repository map, and end-to-end system explanation.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the detailed AWS architecture, repository map, and end-to-end flow.
 
 ## AWS deployment model
 
-The current repo assumes the app is deployed to an EC2 instance in AWS commercial us-east-2 with a standard VPC layout. The intended traffic flow is:
+The current repo assumes the app runs on an EC2 instance in AWS us-east-2 with a standard VPC layout. The intended traffic flow is:
 
-- user enters the app through a restricted ingress path, private network, or controlled public access model
+- user access through a restricted ingress path, private network, or controlled public access model
 - the Streamlit service runs on the EC2 host
 - the app calls Amazon Bedrock for routing and synthesis
-- the app calls AWS Lambda functions for targeted retrieval workflows
+- the app calls AWS Lambda for targeted retrieval workflows
 - CloudWatch is used for logs and operational monitoring
 
-This is a prototype architecture and is intentionally written as a handoff-ready baseline for a future pilot-scale deployment.
+This is a working baseline for a future deployment and is intended to be reviewed against the live AWS environment before broader rollout.
 
 ## Infrastructure as code
 
-The repository now includes a starting Terraform baseline in [terraform/README.md](terraform/README.md) for the current EC2 + VPC + IAM + logging pattern. This is intended to support validation of the manually created AWS resources and transition the setup into an infrastructure-as-code workflow.
+The repository includes a Terraform baseline in [terraform/README.md](terraform/README.md) for the current EC2, VPC, IAM, and logging pattern. This is meant to support validation of the manually created AWS resources and move the setup toward an infrastructure-as-code workflow.
 
-The Terraform baseline is designed to reflect the current architecture assumptions without hardcoding a final production design. Before production use, validate the live AWS inventory and reconcile those resource names and network ranges with the real environment.
+The Terraform baseline reflects the current architecture assumptions without locking in a final production design. Validate the live AWS inventory before using it as the source of truth for an operational environment.
 
 ## Local setup
 
-The repo is expected to be managed from a Windows workstation in many operational environments. The commands below include both Unix-style and Windows PowerShell variants so the repo can be used across developer machines and operator workstations.
+Use a Python 3.13 virtual environment for local validation. The examples below use bash commands, with a short PowerShell equivalent when needed.
 
 ### 1. Clone the repository
 
@@ -70,33 +70,17 @@ git clone <repo-url>
 cd demo-investigAIte
 ```
 
-PowerShell:
-
-```powershell
-git clone <repo-url>
-cd demo-investigAIte
-```
-
 ### 2. Create a virtual environment
-
-macOS/Linux:
 
 ```bash
 python3.13 -m venv .venv
 source .venv/bin/activate
 ```
 
-Windows PowerShell:
+On Windows PowerShell:
 
 ```powershell
 py -3.13 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-If PowerShell blocks the activation script, run:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\.venv\Scripts\Activate.ps1
 ```
 
@@ -108,25 +92,15 @@ python -m pip install -r requirements.txt
 python -m pip install -r requirements-dev.txt
 ```
 
-PowerShell equivalent:
-
-```powershell
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-python -m pip install -r requirements-dev.txt
-```
-
 ### 4. Configure environment values
 
-Copy the example env file and adjust for the target environment:
-
-macOS/Linux:
+Copy the example env file and update it for the target environment:
 
 ```bash
 cp .env.example .env
 ```
 
-Windows PowerShell:
+On Windows PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
@@ -143,64 +117,34 @@ EXPLAIN_MODEL_ID=us.anthropic.claude-sonnet-4-6
 REPORT_MODEL_ID=us.anthropic.claude-sonnet-4-6
 ```
 
-Prefer IAM roles and instance profiles for EC2-based deployment. Use static AWS credentials only for local troubleshooting and never commit them to the repo.
+Use IAM roles and instance profiles for EC2-based deployment. Keep static AWS credentials only for local troubleshooting and do not commit them to the repo.
 
 ### 5. Run the app
-
-For a local development environment:
 
 ```bash
 streamlit run app.py
 ```
 
-PowerShell:
-
-```powershell
-streamlit run app.py
-```
-
-For EC2 deployment, the intended execution pattern is:
+For EC2 deployment, use:
 
 ```bash
 streamlit run app.py --server.address 0.0.0.0 --server.port 8501
 ```
 
-Windows operators working from a local workstation should still validate the app in a Python virtual environment first, then deploy the same repository to EC2 using the repo’s service configuration and deployment automation.
-
-## Windows operator guidance
-
-Windows is the most likely deployment and administration workstation for this repo. The following guidance is recommended:
-
-- install Python 3.13.x and verify it with `py -3.13 --version`
-- install the AWS CLI and authenticate with `aws configure` or `aws sso login` if your organization uses SSO
-- install Terraform using the approved method for the workstation or environment, such as an enterprise-managed package, the official Terraform installer, or a validated internal distribution path
-- prefer PowerShell for local validation commands and Git Bash only when the shell behavior is already familiar
-- keep `.env`, `.venv`, and other local runtime artifacts out of source control
-
-Example Windows setup flow:
-
-```powershell
-py -3.13 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-python -m pip install -r requirements-dev.txt
-Copy-Item .env.example .env
-streamlit run app.py
-```
+When working from a Windows workstation, validate the app in a Python virtual environment first and then deploy the same repo to EC2 using the service configuration and deployment automation in this project.
 
 ## Developer workflow and quality gates
 
-This repository is being structured for a clean handoff and for future pilot development. The project should maintain:
+The project should keep these basics in place:
 
 - unit tests for core logic and helper behavior
 - a baseline security review for dependencies and code
 - clear architecture and operational documentation
-- environment-driven configuration rather than hardcoded secrets
+- environment-driven configuration instead of hardcoded secrets
 
 ## Testing
 
-Unit tests are the starting point for coverage. The project includes a lightweight test suite for helper logic and AWS integration wrappers.
+The project includes a lightweight test suite for helper logic and AWS integration wrappers.
 
 ```bash
 python -m pytest
@@ -208,29 +152,29 @@ python -m pytest
 
 ## Security baseline
 
-The repo is intentionally structured to keep security guidance in the same place as the architecture explanation. The expected posture is:
+The expected security posture is:
 
-- IAM role and instance profile usage preferred over static access keys
+- IAM roles and instance profiles instead of static access keys
 - no secrets checked into version control
 - least-privilege AWS permissions
-- network restrictions based on pilot or internal deployment needs
+- network restrictions based on the deployment environment
 - validation of logs, permissions, and dependency hygiene before broader deployment
 
 ## Documentation set
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) — system overview, repository map, data flow, current-state vs. pilot-state architecture, and end-to-end explanation
-- [DATA_SOURCES.md](DATA_SOURCES.md) — expected source types, schemas, and safe data-handling guidance
+- [ARCHITECTURE.md](ARCHITECTURE.md): system overview, repository map, data flow, and end-to-end explanation
+- [DATA_SOURCES.md](DATA_SOURCES.md): expected source types, schemas, and safe data-handling guidance
 
 ## Contributing
 
 When contributing to this repo:
 
-1. keep the app config externalized through environment variables
+1. keep application configuration in environment variables
 2. prefer IAM-based access over static credentials
 3. validate tests before proposing a merge
 4. update the architecture when the system changes
-5. keep the repo in a prototype-ready state for the next engineer
+5. keep the repo clear and easy for the next engineer to understand
 
 ## Notes
 
-This project is intentionally structured as a functional prototype with a path toward a pilot deployment. The repository should continue to evolve in a way that makes the architecture, security posture, and operational flow understandable to an engineer without requiring deep tribal knowledge.
+This repository is intended to remain understandable to the next engineer without relying on tribal knowledge. The architecture, security posture, and operational flow should stay clear as the project evolves.
