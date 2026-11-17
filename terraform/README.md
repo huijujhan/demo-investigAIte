@@ -36,33 +36,112 @@ flowchart LR
 - `outputs.tf` — key values for validation and handoff
 - `terraform.tfvars.example` — example variable values for a new deployment
 
-## Recommended workflow
+## End-to-end deployment workflow
 
-1. Copy the example values:
+### 1. Authenticate to AWS
 
-   ```bash
-   cp terraform/terraform.tfvars.example terraform/terraform.tfvars
-   ```
+Configure your AWS CLI credentials before you run Terraform.
 
-2. Update the variable file for the target AWS account and environment.
-3. Initialize Terraform:
+For a user profile:
 
-   ```bash
-   cd terraform
-   terraform init
-   ```
+```bash
+aws configure
+```
 
-4. Review the execution plan:
+Or, if a profile already exists:
 
-   ```bash
-   terraform plan
-   ```
+```bash
+export AWS_PROFILE=my-profile
+export AWS_REGION=us-east-2
+aws sts get-caller-identity
+```
 
-5. Apply when the plan matches the intended environment:
+You should see your account ID and ARN. This confirms the CLI is authenticated and ready to use.
 
-   ```bash
-   terraform apply
-   ```
+### 2. Install Terraform
+
+On macOS with Homebrew:
+
+```bash
+brew install hashicorp/tap/terraform
+terraform version
+```
+
+On Linux or other environments, follow the official install path for your platform.
+
+### 3. Clone and prepare the repo
+
+```bash
+git clone <repo-url>
+cd demo-investigAIte
+```
+
+Then move into the Terraform directory:
+
+```bash
+cd terraform
+```
+
+### 4. Configure the deployment values
+
+Copy the example variable file and adjust it for the target environment:
+
+```bash
+cp terraform.tfvars.example terraform.tfvars
+```
+
+Update the values in `terraform.tfvars` so they align with your AWS account and environment. The default file is intentionally simple and suitable for a validation environment.
+
+### 5. Initialize Terraform
+
+```bash
+terraform init
+```
+
+### 6. Review the deployment plan
+
+```bash
+terraform plan
+```
+
+Review:
+
+- VPC and subnet definitions
+- security groups
+- IAM roles
+- EC2 instance creation
+- CloudWatch log group
+- optional S3 bucket creation
+
+### 7. Apply the environment
+
+```bash
+terraform apply
+```
+
+When prompted, confirm the apply. This creates the validation environment from the current repo baseline.
+
+### 8. Validate the deployed app
+
+Once the EC2 instance is available, connect to it and check the service:
+
+```bash
+ssh -i <your-key.pem> ec2-user@<public-ip>
+sudo systemctl status investigAIte --no-pager
+curl -I http://localhost:8501
+```
+
+If the service is running, the app should respond on port 8501.
+
+### 9. Tear down the validation environment
+
+When validation is complete, tear down the test deployment to avoid leaving AWS resources running:
+
+```bash
+terraform destroy
+```
+
+This removes the transient VPC, EC2 instance, IAM role, security groups, and any associated validation resources created for the test run.
 
 ## Important notes
 
@@ -71,3 +150,4 @@ flowchart LR
 - Prefer IAM roles and EC2 instance profiles over static AWS access keys.
 - Confirm the actual Lambda names and model IDs before using this baseline in a real deployment.
 - Treat this as a transition artifact until the AWS environment is validated and the Terraform config is reconciled with the live inventory.
+- Keep the validation deployment isolated and ephemeral so it does not become a permanent environment with lingering cost or risk.
