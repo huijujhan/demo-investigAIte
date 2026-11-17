@@ -1,5 +1,7 @@
 # InvestigAIte
 
+![InvestigAIte logo](./InvestigAIte.png)
+
 InvestigAIte is a prototype investigative research assistant designed to reduce repetitive manual research and case-prep work for investigators. The current app is intentionally focused on a lightweight user experience: an analyst asks a question in natural language, the system routes the request to the most relevant data source, and the result is summarized in a report-friendly format.
 
 This project is currently a working POC for a broader pilot effort. The goal is to reduce time spent collecting and reconciling information across multiple systems so investigators can focus on higher-value analytical and enforcement work.
